@@ -1,0 +1,55 @@
+:host {
+  display: block;
+}
+
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #f4f6f9;
+}
+
+mat-card {
+  width: 400px;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  background: white;
+}
+
+mat-card-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  color: #1976d2;
+}
+
+mat-form-field {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.mat-mdc-form-field {
+  .mdc-text-field {
+    border-radius: 8px;
+  }
+}
+
+.mat-mdc-form-field.mat-form-field-invalid {
+  .mdc-text-field {
+    border: 1px solid red;
+  }
+}
+
+button {
+  width: 100%;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  text-align: left;
+}

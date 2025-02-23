@@ -1,4 +1,69 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+@use './app_theme-colors.scss' as theme;
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+
+  color-scheme: light dark;
+  @include mat.theme(
+    (
+      color: (
+        primary: theme.$primary-palette,
+        tertiary: theme.$tertiary-palette,
+      ),
+      typography: (
+        plain-family: Roboto,
+        brand-family: Roboto,
+        bold-weight: 700,
+        medium-weight: 500,
+        regular-weight: 300,
+      ),
+      density: 0,
+    )
+  );
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+}
+
+:root {
+  @include mat.toolbar-overrides(
+    (
+      container-background-color: var(--mat-sys-primary-container),
+      container-text-color: var(--mat-sys-on-primary-container),
+      // title-text-weight: var(--mat-sys-label-medium-weight)
+    )
+  );
+
+  @include mat.button-overrides(
+    (
+      outlined-outline-width: 2px,
+    )
+  );
+
+  & {
+    --mat-sys-title-large-weight: 500;
+    --mat-sys-title-small-weight: 400;
+    --mat-sys-body-large-weight: 500;
+  }
+}
+
+.error {
+  @include mat.snack-bar-overrides((
+    container-color: var(--mat-sys-error),
+    supporting-text-color: var(--mat-sys-on-error),
+  ));
+}

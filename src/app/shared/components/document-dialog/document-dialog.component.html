@@ -1,0 +1,52 @@
+<h2 mat-dialog-title>Create Document</h2>
+<mat-dialog-content>
+  <form [formGroup]="form">
+    <!-- Document Name -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Document Name</mat-label>
+      <input
+        matInput
+        formControlName="name"
+        placeholder="Enter document name" />
+    </mat-form-field>
+
+    <!-- File Upload (Fixed) -->
+    <label for="fileUpload" class="file-label">
+      <input
+        #fileInput
+        type="file"
+        id="fileUpload"
+        (change)="onFileChange($event)"
+        accept=".pdf,.doc,.docx"
+        hidden />
+      <button mat-raised-button color="accent" (click)="fileInput.click()">
+        <mat-icon>upload</mat-icon>
+        {{ file ? file.name : 'Choose File' }}
+      </button>
+    </label>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Status</mat-label>
+      <mat-select matInput formControlName="status">
+        <mat-option value="DRAFT">Draft</mat-option>
+        <mat-option value="READY_FOR_REVIEW">Ready for Review</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Cancel</button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="createDocument()"
+    [disabled]="form.invalid || isUploading()">
+    @if (isUploading()) {
+      <mat-icon>hourglass_top</mat-icon>
+    }
+    @if (!isUploading()) {
+      <span>Create</span>
+    }
+  </button>
+</mat-dialog-actions>

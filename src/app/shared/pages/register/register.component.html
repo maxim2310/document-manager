@@ -1,0 +1,72 @@
+<app-header title="Login"></app-header>
+
+<div class="wrapper">
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <mat-card>
+      <mat-card-title>Register</mat-card-title>
+  
+      <mat-card-content>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Full Name</mat-label>
+          <input matInput formControlName="fullName" type="text" required />
+          @if (registerForm.get('fullName')?.hasError('required')) {
+            <mat-error> Full Name is required </mat-error>
+          }
+        </mat-form-field>
+  
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="email" required />
+          @if (registerForm.get('email')?.hasError('required')) {
+            <mat-error> Email is required </mat-error>
+          }
+          @if (registerForm.get('email')?.hasError('email')) {
+            <mat-error> Enter a valid email </mat-error>
+          }
+        </mat-form-field>
+  
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input
+            matInput
+            formControlName="password"
+            [type]="hidePassword() ? 'password' : 'text'"
+            required />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="hidePassword.set(!hidePassword())">
+            <mat-icon>{{
+              hidePassword() ? 'visibility_off' : 'visibility'
+            }}</mat-icon>
+          </button>
+          @if (registerForm.get('password')?.hasError('required')) {
+            <mat-error> Password is required </mat-error>
+          }
+          @if (registerForm.get('password')?.hasError('minlength')) {
+            <mat-error> Password must be at least 6 characters </mat-error>
+          }
+        </mat-form-field>
+  
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Role</mat-label>
+          <mat-select formControlName="role" required>
+            @for (role of roles; track $index) {
+              <mat-option [value]="role">{{ role }}</mat-option>
+            }
+          </mat-select>
+          @if (registerForm.get('role')?.hasError('required')) {
+            <mat-error> Role is required </mat-error>
+          }
+        </mat-form-field>
+      </mat-card-content>
+  
+      <mat-card-actions align="end">
+        <button mat-flat-button type="submit" [disabled]="registerForm.invalid">
+          Register
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </form>
+</div>
