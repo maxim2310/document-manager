@@ -7,22 +7,30 @@
   </mat-form-field>
 
   @if (isReviewer) {
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Document status</mat-label>
-      <mat-select formControlName="status">
-        @for (status of statuses; track status) {
-          <mat-option [value]="status">
-            {{ status }}
-          </mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
+    @if (isUnderReview || isReadyForReview) {
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Document status</mat-label>
+        <mat-select formControlName="status">
+          @for (status of statuses; track status) {
+            <mat-option [value]="status">
+              {{ status }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    } @else {
+      <p>
+        You can only change the status if the document is in the review process or ready for it.
+      </p>
+    }
   }
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
   <button mat-button (click)="close()" class="error">Cancel</button>
-  <button mat-button (click)="updateDocument()" [disabled]="isProcessing">
-    Save
-  </button>
+  @if (statuses.length || !isReviewer) {
+    <button mat-button (click)="updateDocument()" [disabled]="isProcessing">
+      Save
+    </button>
+  }
 </mat-dialog-actions>

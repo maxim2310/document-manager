@@ -42,6 +42,7 @@ export class LoginComponent {
     private fb: FormBuilder,
     private navService: NavigationService
   ) {
+    this.authService.logout();
     this.loginForm = this.fb.nonNullable.group({
       email: new FormControl('', {
         nonNullable: true,

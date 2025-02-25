@@ -36,8 +36,6 @@ export class RevokeDialogComponent {
   }
 
   canRevoke() {
-    console.log(this.data.document);
-
     return (
       this.data.user?.role === UserRoleEnum.USER &&
       this.data.document.status === DocStatusEnum.READY_FOR_REVIEW

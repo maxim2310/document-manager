@@ -38,16 +38,23 @@ export class EditDocumentDialogComponent {
   form: FormGroup;
   isProcessing = false;
   isReviewer: boolean;
-  statuses = Object.values(DocStatusEnum);
+  isUnderReview!: boolean;
+  isReadyForReview!: boolean;
+  statuses!: DocStatusEnum[];
 
   constructor(
     private dialogRef: MatDialogRef<EditDocumentDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { document: Document; user: User },
     private fb: FormBuilder,
     private documentService: DocumentService
-  ) {    
+  ) {
     this.isReviewer = data.user?.role === UserRoleEnum.REVIEWER;
-
+    this.isUnderReview =
+      this.data.document.status === DocStatusEnum.UNDER_REVIEW;
+    this.isReadyForReview =
+      this.data.document.status === DocStatusEnum.READY_FOR_REVIEW;
+    this.data.document.status === DocStatusEnum.UNDER_REVIEW;
+    this.statuses = this.filterStatus(Object.values(DocStatusEnum));
     this.form = this.fb.nonNullable.group({
       name: [data.document.name, Validators.required],
       status: [data.document.status],
@@ -88,5 +95,20 @@ export class EditDocumentDialogComponent {
 
   close() {
     this.dialogRef.close(false);
+  }
+
+  filterStatus(statuses: DocStatusEnum[]) {
+    return statuses.filter(status => {
+      if (this.isUnderReview) {
+        return [DocStatusEnum.APPROVED, DocStatusEnum.DECLINED].includes(
+          status
+        );
+      }
+      if (this.isReadyForReview) {
+        return [DocStatusEnum.UNDER_REVIEW].includes(status);
+      }
+
+      return false;
+    });
   }
 }

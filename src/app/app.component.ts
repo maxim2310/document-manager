@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { Component, effect, OnInit } from '@angular/core';
+import {  RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -18,19 +18,23 @@ export class AppComponent implements OnInit {
     private userService: UserService,
     private authService: AuthService,
     private snackBar: MatSnackBar
-  ) {}
+  ) {
+    effect(() => {      
+      if (!!this.authService.accessTokenSignal()) {
+        this.userService.getUser().subscribe({
+          error: e => {
+            this.snackBar.open(
+              `Error: ${e.error.message || 'Registration failed'}`,
+              'Close',
+              { duration: 3000, panelClass: 'error' }
+            );
+          },
+        });
+      }
+    })
+  }
 
   ngOnInit(): void {
-    if (this.authService.isLoggedIn()) {
-      this.userService.getUser().subscribe({
-        error: e => {
-          this.snackBar.open(
-            `Error: ${e.error.message || 'Registration failed'}`,
-            'Close',
-            { duration: 3000, panelClass: 'error' }
-          );
-        },
-      });
-    }
+
   }
 }

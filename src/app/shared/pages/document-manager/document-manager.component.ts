@@ -3,6 +3,7 @@ import {
   OnInit,
   ViewChild,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -90,11 +91,14 @@ export class DocumentManagerComponent implements OnInit {
   docStatus = DocStatusEnum;
 
   user = computed(() => this.userService.userSignal());
-  users = signal<User[]>([]);
+  users = computed(() => this.userService.usersSignal());
   selectedUser = signal<User | null>(null);
   creatorControl = new FormControl<User | string | null>('');
   filteredUsers = signal<User[]>(this.users());
-  isReviewer = computed(() => this.user()?.role === this.userRole.REVIEWER);
+  isReviewer = computed(() => {
+    return this.user()?.role === this.userRole.REVIEWER;
+  });
+
   displayedColumns = computed(() =>
     this.user()?.role === this.userRole.REVIEWER
       ? REVIEWER_COLUMNS
@@ -102,7 +106,7 @@ export class DocumentManagerComponent implements OnInit {
   );
   dataSource = new MatTableDataSource<Document>([]);
   isLoading = signal<boolean>(true);
-  allStatuses = Object.values(DocStatusEnum);
+  allStatuses!: DocStatusEnum[];
   filterStatus = signal<string | null>(null);
   totalDocuments = signal(0);
   sortData = signal<Sort | null>(null);
@@ -113,23 +117,35 @@ export class DocumentManagerComponent implements OnInit {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatTable) table!: MatTable<any>;
 
-  ngOnInit(): void {
-    if (this.isReviewer()) {
-      this.userService.getUsers().subscribe(users => {
-        this.users.set(users);
-        this.filteredUsers.set(users);
-      });
+  constructor() {
+    effect(() => {
+      if (this.isReviewer()) {
+        this.userService.getUsers().subscribe(users => {});
 
-      this.creatorControl.valueChanges.subscribe(value => {
-        const search = typeof value === 'string' ? value.toLowerCase() : '';
-        this.filteredUsers.set(
-          this.users().filter(user =>
-            user.fullName.toLowerCase().includes(search)
-          )
+        this.creatorControl.valueChanges.subscribe(value => {
+          const search = typeof value === 'string' ? value.toLowerCase() : '';
+          this.filteredUsers.set(
+            this.users().filter(user =>
+              user.fullName.toLowerCase().includes(search)
+            )
+          );
+        });
+      }
+    });
+
+    effect(() => {
+      this.filteredUsers.set(this.users());
+      if (this.user()) {
+        this.allStatuses = Object.values(DocStatusEnum).filter(status =>
+          this.isReviewer()
+            ? status !== DocStatusEnum.DRAFT
+            : status === DocStatusEnum.DRAFT || status === DocStatusEnum.READY_FOR_REVIEW
         );
-      });
-    }
+      }
+    });
   }
+
+  ngOnInit(): void {}
 
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
@@ -150,16 +166,21 @@ export class DocumentManagerComponent implements OnInit {
   loadDocuments(): void {
     const body = this.createBodyForLoadDocument();
     this.isLoading.set(true);
-    this.documentService.getDocuments(body).subscribe((data: DocumentPage) => {
-      this.dataSource.data = data.results;
-      this.totalDocuments.set(data.count);
+    this.documentService.getDocuments(body).subscribe({
+      next: (data: DocumentPage) => {
+        this.dataSource.data = data.results;
+        this.totalDocuments.set(data.count);
 
-      setTimeout(() => {
-        this.paginator.length = this.totalDocuments();
-        this.paginator.pageIndex = this.pageIndex();
-        this.paginator.pageSize = this.pageSize();
+        setTimeout(() => {
+          this.paginator.length = this.totalDocuments();
+          this.paginator.pageIndex = this.pageIndex();
+          this.paginator.pageSize = this.pageSize();
+          this.isLoading.set(false);
+        }, 20);
+      },
+      error: () => {
         this.isLoading.set(false);
-      }, 20);
+      },
     });
   }
 
@@ -257,7 +278,6 @@ export class DocumentManagerComponent implements OnInit {
   }
   openReviewDialog(document: Document): void {
     this.documentService.getDocumentById(document.id).subscribe(document => {
-      console.log('Fetched Document:', document);
       this.dialog.open(DocumentReviewDialogComponent, {
         width: '100vw',
         height: '100vh',

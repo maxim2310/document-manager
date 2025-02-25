@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import PSPDFKit  from 'pspdfkit';
+import PSPDFKit from 'pspdfkit';
 
 const baseUrl = `${window.location.protocol}//${window.location.host}/assets/`;
 
@@ -27,13 +27,13 @@ export class DocumentReviewDialogComponent implements AfterViewInit {
     private dialogRef: MatDialogRef<DocumentReviewDialogComponent>
   ) {}
 
-  async ngAfterViewInit(): Promise<void> {    
+  async ngAfterViewInit(): Promise<void> {
     try {
       this.instance = await PSPDFKit.load({
-        container: this.containerRef.nativeElement,
+          container: this.containerRef.nativeElement,
         document: this.data.documentUrl,
         baseUrl: baseUrl,
-      });
+        });
     } catch (error) {
       console.error('Error loading PSPDFKit:', error);
     }
