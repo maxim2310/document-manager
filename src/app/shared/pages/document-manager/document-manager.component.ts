@@ -1,8 +1,6 @@
 import {
-  ChangeDetectorRef,
   Component,
   OnInit,
-  Signal,
   ViewChild,
   computed,
   inject,
@@ -87,7 +85,6 @@ export class DocumentManagerComponent implements OnInit {
   private documentService = inject(DocumentService);
   private userService = inject(UserService);
   private dialog = inject(MatDialog);
-  private cdRef = inject(ChangeDetectorRef);
 
   userRole = UserRoleEnum;
   docStatus = DocStatusEnum;
