@@ -8,7 +8,9 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "format": "prettier --write \"src/**/*.{ts,html,scss,json}\"",
-    "check-format": "prettier --check \"src/**/*.{ts,html,scss,json}\""
+    "check-format": "prettier --check \"src/**/*.{ts,html,scss,json}\"",
+    "deploy-netlify": "netlify deploy --build --prod",
+    "deploy-gh": "ng deploy --dir=dist/document-manager/browser"
   },
   "private": true,
   "dependencies": {
