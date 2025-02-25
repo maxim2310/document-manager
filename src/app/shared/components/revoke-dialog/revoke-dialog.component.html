@@ -1,0 +1,17 @@
+
+<h2 mat-dialog-title cdkFocusInitial>Confirmation of revoking</h2>
+<mat-dialog-content>
+  @if (canRevoke()) {
+    <p>Are you sure you want to revoke the document "<strong>{{ data.document.name }}</strong>"?</p>
+  } @else {
+    <p>You can Revoke a document only if its status is "Draft" </p>
+  }
+</mat-dialog-content>
+<mat-dialog-actions >
+  <button mat-button (click)="close()">Cancel</button>
+  @if (canRevoke()) {
+    <button mat-button color="accent" (click)="withdrawDocument()">
+      Revoke
+    </button>
+  }
+</mat-dialog-actions>

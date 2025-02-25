@@ -1,0 +1,15 @@
+
+<h2 mat-dialog-title cdkFocusInitial>Confirm deletion</h2>
+<mat-dialog-content>
+  @if (canDelete()) {
+    <p>Are you sure you want to delete the document "<strong>{{ data.document.name }}</strong>"?</p>
+  } @else {
+    <p>You can delete a document only if its status is "Draft" or "Revoked"</p>
+  }
+</mat-dialog-content>
+<mat-dialog-actions >
+  <button mat-button (click)="close()">Cancel</button>
+  @if (canDelete()) {
+    <button mat-button  (click)="deleteDocument()">Delete</button>
+  }
+</mat-dialog-actions>
