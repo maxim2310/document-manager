@@ -18,95 +18,72 @@ import { User } from '../../modules/User';
 import { Document } from '../../modules/Document';
 import { DocStatusEnum } from '../../modules/StatusEnum';
 import { UserRoleEnum } from '../../modules/RolesEnum';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-edit-document-dialog',
-  standalone: true,
   imports: [
     ReactiveFormsModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    MatSelectModule,
   ],
   templateUrl: './edit-document-dialog.component.html',
-  styles: [
-    `
-      .full-width {
-        width: 100%;
-      }
-    `,
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './edit-document-dialog.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditDocumentDialogComponent {
   form: FormGroup;
   isProcessing = false;
+  isReviewer: boolean;
+  statuses = Object.values(DocStatusEnum);
 
   constructor(
     private dialogRef: MatDialogRef<EditDocumentDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { document: Document; user: User },
     private fb: FormBuilder,
     private documentService: DocumentService
-  ) {
+  ) {    
+    this.isReviewer = data.user?.role === UserRoleEnum.REVIEWER;
+
     this.form = this.fb.nonNullable.group({
       name: [data.document.name, Validators.required],
+      status: [data.document.status],
     });
+
+    if (this.isReviewer) {
+      this.form.get('name')?.disable();
+    }
   }
 
   updateDocument() {
     if (this.form.invalid) return;
-
     this.isProcessing = true;
-    this.documentService
-      .updateDocument(this.data.document.id, { name: this.form.value.name })
-      .subscribe({
-        next: () => {
-          this.isProcessing = false;
-          this.dialogRef.close({
-            action: 'UPDATE',
-            name: this.form.value.name,
-          });
-        },
-        error: () => {
-          this.isProcessing = false;
-        },
-      });
-  }
 
-  deleteDocument() {
-    if (this.canDelete()) {
+    const { name, status } = this.form.value;
+
+    if (this.isReviewer) {
       this.documentService
-        .deleteDocument(this.data.document.id)
-        .subscribe(() => {
-          this.dialogRef.close({ action: 'DELETE' });
+        .changeStatus(this.data.document.id, { status })
+        .subscribe({
+          next: () => this.closeDialog('STATUS_UPDATE', { status }),
+          error: () => (this.isProcessing = false),
+        });
+    } else {
+      this.documentService
+        .updateDocument(this.data.document.id, { name })
+        .subscribe({
+          next: () => this.closeDialog('UPDATE', { name }),
+          error: () => (this.isProcessing = false),
         });
     }
   }
 
-  withdrawDocument() {
-    if (this.canRevoke()) {
-      this.documentService.revokeReview(this.data.document.id).subscribe(() => {
-        this.dialogRef.close({ action: 'WITHDRAW' });
-      });
-    }
-  }
-
-  canDelete() {
-    return (
-      this.data.user.role === UserRoleEnum.USER &&
-      (this.data.document.status === DocStatusEnum.DRAFT ||
-        this.data.document.status === DocStatusEnum.REVOKE)
-    );
-  }
-
-  canRevoke() {
-    console.log(this.data.document.status);
-    
-    return (
-      this.data.user.role === UserRoleEnum.USER &&
-      this.data.document.status === DocStatusEnum.READY_FOR_REVIEW
-    );
+  closeDialog(action: string, data: any) {
+    this.isProcessing = false;
+    this.dialogRef.close({ action, ...data });
   }
 
   close() {

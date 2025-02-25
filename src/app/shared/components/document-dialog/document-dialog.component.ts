@@ -1,4 +1,4 @@
-import { Component, Inject, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, inject, signal } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
   FormBuilder,
@@ -29,6 +29,7 @@ import {MatButtonModule} from '@angular/material/button';
   selector: 'app-document-dialog',
   templateUrl: './document-dialog.component.html',
   styleUrls: ['./document-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DocumentDialogComponent {
   private documentService = inject(DocumentService);
