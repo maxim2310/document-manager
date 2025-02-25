@@ -66,4 +66,26 @@ body {
     container-color: var(--mat-sys-error),
     supporting-text-color: var(--mat-sys-on-error),
   ));
+
+  @include mat.button-overrides((
+    outlined-label-text-color: var(--mat-sys-error),
+    outlined-outline-color: var(--mat-sys-error),
+
+  ));
+}
+
+.full-screen-dialog {
+  @include mat.dialog-overrides((
+    container-max-width: 100vw,
+    container-shape: 0,
+  ));
+
+
+}
+.full-screen-dialog .mat-dialog-container {
+  width: 100vw;
+  height: 100vh;
+  padding: 16px;  // Adjust padding as needed
+  margin: 0;
+  border-radius: 0; // Removes rounded corners
 }

@@ -49,6 +49,7 @@ import {
   MatAutocompleteModule,
   MatAutocompleteSelectedEvent,
 } from '@angular/material/autocomplete';
+import { DocumentReviewDialogComponent } from '../../components/document-review-dialog/document-review-dialog.component';
 
 const REVIEWER_COLUMNS = [
   'name',
@@ -257,6 +258,17 @@ export class DocumentManagerComponent implements OnInit {
       if (result) {
         this.loadDocuments();
       }
+    });
+  }
+  openReviewDialog(document: Document): void {
+    this.documentService.getDocumentById(document.id).subscribe(document => {
+      console.log('Fetched Document:', document);
+      this.dialog.open(DocumentReviewDialogComponent, {
+        width: '100vw',
+        height: '100vh',
+        panelClass: 'full-screen-dialog',
+        data: { documentUrl: document.fileUrl },
+      });
     });
   }
 }
