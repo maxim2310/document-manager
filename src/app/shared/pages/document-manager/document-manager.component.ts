@@ -50,6 +50,7 @@ import {
   MatAutocompleteSelectedEvent,
 } from '@angular/material/autocomplete';
 import { DocumentReviewDialogComponent } from '../../components/document-review-dialog/document-review-dialog.component';
+import { SendToReviewDialogComponent } from '../../components/send-to-review-dialog/send-to-review-dialog.component';
 
 const REVIEWER_COLUMNS = [
   'name',
@@ -58,7 +59,7 @@ const REVIEWER_COLUMNS = [
   'updatedAt',
   'actions',
 ] as const;
-const USER_COLUMNS = ['name', 'status', 'actions'] as const;
+const USER_COLUMNS = ['name', 'status', 'updatedAt', 'actions'] as const;
 
 @Component({
   selector: 'app-document-manager',
@@ -89,6 +90,7 @@ export class DocumentManagerComponent implements OnInit {
   private cdRef = inject(ChangeDetectorRef);
 
   userRole = UserRoleEnum;
+  docStatus = DocStatusEnum;
 
   user = computed(() => this.userService.userSignal());
   users = signal<User[]>([]);
@@ -108,26 +110,28 @@ export class DocumentManagerComponent implements OnInit {
   totalDocuments = signal(0);
   sortData = signal<Sort | null>(null);
   pageIndex = signal(0);
-  pageSize = signal(5);
+  pageSize = signal(10);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatTable) table!: MatTable<any>;
 
   ngOnInit(): void {
-    this.userService.getUsers().subscribe(users => {
-      this.users.set(users);
-      this.filteredUsers.set(users);
-    });
+    if (this.isReviewer()) {
+      this.userService.getUsers().subscribe(users => {
+        this.users.set(users);
+        this.filteredUsers.set(users);
+      });
 
-    this.creatorControl.valueChanges.subscribe(value => {
-      const search = typeof value === 'string' ? value.toLowerCase() : '';
-      this.filteredUsers.set(
-        this.users().filter(user =>
-          user.fullName.toLowerCase().includes(search)
-        )
-      );
-    });
+      this.creatorControl.valueChanges.subscribe(value => {
+        const search = typeof value === 'string' ? value.toLowerCase() : '';
+        this.filteredUsers.set(
+          this.users().filter(user =>
+            user.fullName.toLowerCase().includes(search)
+          )
+        );
+      });
+    }
   }
 
   ngAfterViewInit(): void {
@@ -141,13 +145,7 @@ export class DocumentManagerComponent implements OnInit {
       if (sortEvent.active !== 'creator') {
         this.loadDocuments();
       } else {
-        this.dataSource.data.sort((a, b) => {
-          const emailA = a.creator.email.toLowerCase();
-          const emailB = b.creator.email.toLowerCase();
-          return this.sortData()?.direction === 'asc'
-            ? emailA.localeCompare(emailB)
-            : emailB.localeCompare(emailA);
-        });
+        this.dataSource.data.sort(this.sortByCreator(sortEvent));
       }
     });
   }
@@ -170,8 +168,8 @@ export class DocumentManagerComponent implements OnInit {
 
   createBodyForLoadDocument(): GetDocumentParams {
     const body: GetDocumentParams = {
-      page: this.paginator.pageIndex + 1,
-      size: this.paginator.pageSize,
+      page: this.pageIndex() + 1,
+      size: this.pageSize(),
     };
     const status = this.filterStatus();
     const creatorId = this.selectedUser()?.id;
@@ -212,7 +210,7 @@ export class DocumentManagerComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) this.loadDocuments(); // Refresh table after document creation
+      if (result) this.loadDocuments();
     });
   }
   openEditDialog(document: Document) {
@@ -270,5 +268,28 @@ export class DocumentManagerComponent implements OnInit {
         data: { documentUrl: document.fileUrl },
       });
     });
+  }
+
+  openSendToReviewDialog(document: Document): void {
+    const dialogRef = this.dialog.open(SendToReviewDialogComponent, {
+      width: '400px',
+      data: { document },
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadDocuments();
+      }
+    });
+  }
+
+  sortByCreator(sortEvent: Sort) {
+    return (a: Document, b: Document) => {
+      const emailA = a.creator.email.toLowerCase();
+      const emailB = b.creator.email.toLowerCase();
+      return sortEvent?.direction === 'asc'
+        ? emailA.localeCompare(emailB)
+        : emailB.localeCompare(emailA);
+    };
   }
 }

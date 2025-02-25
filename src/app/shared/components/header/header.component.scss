@@ -5,3 +5,10 @@
 .spacer {
   flex: 1;
 }
+
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}

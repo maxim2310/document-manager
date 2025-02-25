@@ -1,10 +1,12 @@
 <mat-toolbar >
   <span>{{title()}}</span>
   <span class="spacer"></span>
-  @if (isLoggedIn()) {
-    <button mat-stroked-button (click)="logout()" >Logout</button>
-  } @else {
-    <button mat-stroked-button routerLink="/login" >Login</button>
-    <button mat-stroked-button routerLink="/register" >Register</button>
-  }
+  <div class="buttons">
+    @if (isLoggedIn()) {
+      <button mat-stroked-button (click)="logout()" >Logout</button>
+    } @else {
+      <button mat-stroked-button routerLink="/login" >Login</button>
+      <button mat-stroked-button routerLink="/register" >Register</button>
+    }
+  </div>
 </mat-toolbar>

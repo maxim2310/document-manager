@@ -1,5 +1,7 @@
 :host {
-display: block;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
 }
 
 .wrapper {
@@ -27,6 +29,8 @@ mat-card-title {
   font-weight: bold;
   text-align: center;
   color: #1976d2;
+  margin-bottom: 10px;
+
 }
 
 mat-form-field {

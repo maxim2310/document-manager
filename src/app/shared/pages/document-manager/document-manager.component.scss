@@ -1,8 +1,25 @@
+.page-wrapper {
+  padding: 20px;
+}
+
+.filters-wrapper {
+  display: flex;
+  justify-content: space-between;
+  padding-block: 20px;
+
+  .filters {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+}
+
 .example-loading-shade {
   position: absolute;
   top: 0;
   left: 0;
-  bottom: 56px;
+  bottom: 0px;
   right: 0;
   background: rgba(0, 0, 0, 0.15);
   z-index: 1;

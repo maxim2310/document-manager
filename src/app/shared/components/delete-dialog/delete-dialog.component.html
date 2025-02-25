@@ -8,7 +8,7 @@
   }
 </mat-dialog-content>
 <mat-dialog-actions >
-  <button mat-button (click)="close()">Cancel</button>
+  <button mat-button (click)="close()" class="error">Cancel</button>
   @if (canDelete()) {
     <button mat-button  (click)="deleteDocument()">Delete</button>
   }

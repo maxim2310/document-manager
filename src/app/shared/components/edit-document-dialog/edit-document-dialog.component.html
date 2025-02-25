@@ -1,14 +1,14 @@
-<h2 mat-dialog-title>Редагування документа</h2>
+<h2 mat-dialog-title>Editing a document</h2>
 
 <mat-dialog-content class="mat-typography" [formGroup]="form">
   <mat-form-field appearance="outline" class="full-width">
-    <mat-label>Назва документа</mat-label>
+    <mat-label>Document name</mat-label>
     <input matInput formControlName="name" [disabled]="isReviewer" />
   </mat-form-field>
 
   @if (isReviewer) {
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Статус документа</mat-label>
+      <mat-label>Document status</mat-label>
       <mat-select formControlName="status">
         @for (status of statuses; track status) {
           <mat-option [value]="status">
@@ -21,8 +21,8 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-button (click)="close()">Скасувати</button>
+  <button mat-button (click)="close()" class="error">Cancel</button>
   <button mat-button (click)="updateDocument()" [disabled]="isProcessing">
-    Зберегти
+    Save
   </button>
 </mat-dialog-actions>

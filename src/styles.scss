@@ -70,7 +70,7 @@ body {
   @include mat.button-overrides((
     outlined-label-text-color: var(--mat-sys-error),
     outlined-outline-color: var(--mat-sys-error),
-
+    text-label-text-color: var(--mat-sys-error),
   ));
 }
 
@@ -85,7 +85,7 @@ body {
 .full-screen-dialog .mat-dialog-container {
   width: 100vw;
   height: 100vh;
-  padding: 16px;  // Adjust padding as needed
+  padding: 16px;
   margin: 0;
-  border-radius: 0; // Removes rounded corners
+  border-radius: 0;
 }

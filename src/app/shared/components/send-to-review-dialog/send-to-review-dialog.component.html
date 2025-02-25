@@ -1,0 +1,22 @@
+<h2 mat-dialog-title cdkFocusInitial>Send Document for Review</h2>
+
+<mat-dialog-content >
+  <p>Are you sure you want to send this document for review?</p>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-button (click)="close()" [disabled]="isSubmitting()" class="error">
+    Cancel
+  </button>
+  <button
+    mat-button
+    color="primary"
+    (click)="sendToReview()"
+    [disabled]="isSubmitting()">
+    @if (isSubmitting()) {
+      <span>Submitting...</span>
+    } @else {
+      <span>Confirm</span>
+    }
+  </button>
+</mat-dialog-actions>
